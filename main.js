@@ -6,19 +6,26 @@ var grav = 0.5;
 var score = 0;
 
 document.onmousemove = mousemove;
-
 function mousemove(e) {
     mouseX = e.pageX;
     mouseY = e.pageY;
 }
 
+document.ontouchmove = touchmove;
+function touchmove(e) {
+    mouseX = e.touches[0].pageX;
+    mouseY = e.touches[0].pageY;
+}
+
 function setup() {
-    player = new BouncyBounce(window.innerWidth/2, window.innerHeight/2, 50, 100);
     mouseX = window.innerWidth/2;
     mouseY = window.innerHeight/1.5;
+    player = new BouncyBounce(window.innerWidth/2, window.innerHeight/2, 64);
+    var ball = new BouncyBounce(window.innerWidth/2, 20, 32);
+    ball.vx = Math.random() * 6 - 3;
     bouncies = new Array();
     bouncies.push(player);
-    bouncies.push(new BouncyBounce(window.innerWidth/2, 20, 20, 10));
+    bouncies.push(ball);
 }
 
 function update() {
@@ -31,13 +38,12 @@ function update() {
 }
 
 class BouncyBounce {
-    constructor(x, y, r, m) {
+    constructor(x, y, r) {
         this.x = x;
         this.y = y;
         this.vx = 0;
         this.vy = 0;
         this.r = r;
-        this.m = m;
 
         this.e = document.createElement('circle');
         this.e.style.width = r*2 +"px";
