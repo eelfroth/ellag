@@ -1,9 +1,18 @@
 var player;
-var bouncies;
-var mouseX;
-var mouseY;
+var bouncies = [];
+var mouseX = window.innerWidth/2;
+var mouseY = window.innerHeight/1.5;
 var grav = 0.5;
 var score = 0;
+
+var gameloop;
+
+var menu = document.createElement("menu");
+var respawn = document.createElement("menubutton");
+respawn.innerHTML = "∃  ";
+respawn.onclick = setup;
+menu.appendChild(respawn);
+document.body.appendChild(menu);
 
 document.onmousemove = mousemove;
 function mousemove(e) {
@@ -18,14 +27,16 @@ function touchmove(e) {
 }
 
 function setup() {
-    mouseX = window.innerWidth/2;
-    mouseY = window.innerHeight/1.5;
-    player = new BouncyBounce(window.innerWidth/2, window.innerHeight/2, 64);
+    menu.classList.add("inactive");
+    document.body.style.cursor = "none";
+
+    player = new BouncyBounce(mouseX, mouseY, 64);
     var ball = new BouncyBounce(window.innerWidth/2, 20, 32);
     ball.vx = Math.random() * 6 - 3;
-    bouncies = new Array();
     bouncies.push(player);
     bouncies.push(ball);
+
+    gameloop = setInterval(update, 16);
 }
 
 function update() {
@@ -35,6 +46,18 @@ function update() {
     for (var i=0; i<bouncies.length; i++) {
         bouncies[i].update();
     }
+}
+
+function gameover() {
+    window.clearInterval(gameloop);
+
+    menu.classList.remove("inactive");
+    document.body.style.cursor = "auto";
+    
+    for (var i=0; i<bouncies.length; i++) {
+        bouncies[i].destroy();
+    }
+    bouncies = [];
 }
 
 class BouncyBounce {
@@ -48,13 +71,22 @@ class BouncyBounce {
         this.e = document.createElement('circle');
         this.e.style.width = r*2 +"px";
         this.e.style.height = r*2 +"px";
+        this.e.style.left = x - r +"px";
+        this.e.style.top = y - r +"px";
         document.body.appendChild(this.e);
+    }
+    
+    destroy() {
+        document.body.removeChild(this.e);
     }
 
     update() {
         this.vy += grav;
         this.x += this.vx;
         this.y += this.vy;
+        if (this.y-100 > window.innerHeight) {
+            gameover();
+        }
         for (var i=0; i<bouncies.length; i++) {
             if (bouncies[i] != this) {
                 this.collide(bouncies[i]);
@@ -88,6 +120,3 @@ class BouncyBounce {
         }
     }
 }
-
-setup();
-setInterval(update, 16);
