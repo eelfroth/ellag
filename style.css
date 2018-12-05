@@ -1,4 +1,4 @@
-body { font-family: 'sans'; background-color: #000; color: #fff; text-align: center; padding: 0px; }
+body { font-family: 'sans'; background-color: #000; color: #fff; text-align: center; padding: 0px; overflow-y: hidden; }
 circle { background-color: #aaa; color: #000; border-radius: 50%; position: fixed; }
 menu { position: absolute; width: 400px; height: 95%; left: 50%; margin-left: -200px; text-align: left; padding: 0px; top: 0px; }
 slab { background-color: #777; color: #000; font-size: 210px; position: absolute; top: 50%; cursor: pointer; width: 100%; }
@@ -8,7 +8,7 @@ slab:active { background-color: #fff; }
 score { font-size: 16px; color: #000; }
 score.new { color: #fff; animation: blinker 0.4s linear infinite; }
 @keyframes blinker { 20% { color: #888; } }
-.lb { position: absolute; left: -1px; bottom: -4px;}
+.lb { position: absolute; left: -1px; bottom: -3px;}
 .lt { position: absolute; left: -1px; top: -3px;}
-.rb { position: absolute; right: -1px; bottom: -4px;}
+.rb { position: absolute; right: -1px; bottom: -3px;}
 .rt { position: absolute; right: -1px; top: -3px;}

@@ -12,7 +12,7 @@ if (localStorage && 'alltime' in localStorage) {
     alltime = parseFloat(localStorage.alltime);
 }
 
-var gameloop;
+var gameloop = "done";
 
 //scoreboard
 var menu = document.createElement("menu");
@@ -46,7 +46,17 @@ function touchmove(e) {
     mouseY = e.touches[0].pageY;
 }
 
+//sound effects
+loadSound("highscore", "./audio/highscore.wav");
+loadSound("gameover", "./audio/gameover.wav");
+loadSound("tock1", "./audio/tock1.wav");
+loadSound("tock2", "./audio/tock2.wav");
+loadSound("tock3", "./audio/tock3.wav");
+loadSound("tock4", "./audio/tock4.wav");
+
 function setup() {
+    if (gameloop !== "done") return;
+
     menu.classList.add("inactive");
     document.body.style.cursor = "none";
     scorebest.classList.remove("new");
@@ -88,12 +98,14 @@ function update() {
 function gameover() {
     window.clearInterval(gameloop);
     gameloop = "done";
+    playSound(sounds.gameover);
 
     //update highscores
     if (time > best) {
         best = time;
         scorebest.innerHTML = best.toFixed(3);
         scorebest.classList.add("new");
+        playSound(sounds.highscore);
         if (time > alltime) {
             alltime = time;
             scorealltime.innerHTML = alltime.toFixed(3);
@@ -110,72 +122,4 @@ function gameover() {
         bouncies[i].destroy();
     }
     bouncies = [];
-}
-
-class BouncyBounce {
-    constructor(x, y, r) {
-        this.x = x;
-        this.y = y;
-        this.vx = 0;
-        this.vy = 0;
-        this.r = r;
-
-        this.e = document.createElement('circle');
-        this.e.style.width = r*2 +"px";
-        this.e.style.height = r*2 +"px";
-        this.e.style.left = x - r +"px";
-        this.e.style.top = y - r +"px";
-        document.body.appendChild(this.e);
-    }
-    
-    destroy() {
-        document.body.removeChild(this.e);
-    }
-
-    update() {
-        this.vy += grav;
-        this.x += this.vx;
-        this.y += this.vy;
-
-        //out of screen
-        if (this.y-100 > window.innerHeight
-         || this.y+3000 < 0
-         || this.x-100 > window.innerWidth
-         || this.x+100 < 0) {
-            gameover();
-        }
-
-        for (var i=0; i<bouncies.length; i++) {
-            if (bouncies[i] != this) {
-                this.collide(bouncies[i]);
-            }
-        }
-
-        this.e.style.left = this.x - this.r +"px";
-        this.e.style.top = this.y - this.r +"px";
-    }
-
-    dist(x1, y1, x2, y2) {
-        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-    }
-
-    collide(o) {
-        var d = this.dist(this.x, this.y, o.x, o.y);
-        if (d <= this.r + o.r) {
-            var overlap = (d - this.r - o.r) / 2;
-            var nx = (o.x - this.x) / d;
-            var ny = (o.y - this.y) / d;
-            var p = 2 * (this.vx * nx + this.vy * ny - o.vx * nx - o.vy * ny) / (this.r + o.r);
-            //move out of contact
-            this.x -= overlap * (this.x - o.x) / d;
-            this.y -= overlap * (this.y - o.y) / d;
-            o.x -= overlap * (o.x - this.x) / d;
-            o.y -= overlap * (o.y - this.y) / d;
-            //bounce
-            this.vx = this.vx - p * o.r * nx;
-            this.vy = this.vy - p * o.r * ny;
-            o.vx = o.vx + p * this.r * nx;
-            o.vy = o.vy + p * this.r * ny;
-        }
-    }
 }
